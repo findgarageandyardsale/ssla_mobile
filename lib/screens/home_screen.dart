@@ -421,12 +421,18 @@ class HomeScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.announcement),
             title: const Text('Notice Board'),
-            onTap: () => context.push('/notices'),
+            onTap:
+                () => context.push(
+                  '/image-notice?title=Notice Board&imageURL=assets/notice.jpeg',
+                ),
           ),
           ListTile(
             leading: const Icon(Icons.calendar_today),
             title: const Text('Calendar'),
-            onTap: () => context.push('/calendar'),
+            onTap:
+                () => context.push(
+                  '/image-notice?title=Calendar&imageURL=assets/calendar.jpeg',
+                ),
           ),
           ListTile(
             leading: const Icon(Icons.app_registration),

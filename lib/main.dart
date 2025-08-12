@@ -11,6 +11,7 @@ import 'screens/notice_board_screen.dart';
 import 'screens/calendar_screen.dart';
 import 'screens/registration_screen.dart';
 import 'screens/rules_screen.dart';
+import 'screens/image_notice_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -98,6 +99,15 @@ final _router = GoRouter(
       path: '/rules',
       name: 'rules',
       builder: (context, state) => const RulesScreen(),
+    ),
+    GoRoute(
+      path: '/image-notice',
+      name: 'image-notice',
+      builder: (context, state) {
+        final title = state.uri.queryParameters['title'] ?? 'Image Notice';
+        final imageURL = state.uri.queryParameters['imageURL'] ?? '';
+        return ImageNoticeScreen(title: title, imageURL: imageURL);
+      },
     ),
   ],
 );

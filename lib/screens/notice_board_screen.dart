@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/notices_provider.dart';
 import '../models/notice.dart';
 
@@ -77,21 +78,26 @@ class _NoticeBoardScreenState extends ConsumerState<NoticeBoardScreen> {
                   ],
                 ),
               ),
-            
+
             // Notices List
             Expanded(
               child: noticesAsync.when(
                 data: (notices) {
-                  final filteredNotices = selectedCategory != null
-                      ? notices.where((notice) => notice.category == selectedCategory).toList()
-                      : notices;
-                  
+                  final filteredNotices =
+                      selectedCategory != null
+                          ? notices
+                              .where(
+                                (notice) => notice.category == selectedCategory,
+                              )
+                              .toList()
+                          : notices;
+
                   if (filteredNotices.isEmpty) {
                     return const Center(
                       child: Text('No notices found for this category.'),
                     );
                   }
-                  
+
                   return ListView.builder(
                     padding: const EdgeInsets.all(16.0),
                     itemCount: filteredNotices.length,
@@ -102,28 +108,40 @@ class _NoticeBoardScreenState extends ConsumerState<NoticeBoardScreen> {
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error, size: 64, color: Colors.red),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Error loading notices',
-                        style: TextStyle(fontSize: 18),
+                error:
+                    (error, stack) => Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.error, size: 64, color: Colors.red),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Error loading notices',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: () => ref.refresh(noticesProvider),
+                            child: const Text('Retry'),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: () => ref.refresh(noticesProvider),
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
               ),
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Example: Navigate to image notice screen
+          context.push(
+            '/image-notice?title=${Uri.encodeComponent("Sample Image Notice")}&imageURL=${Uri.encodeComponent("assets/classroom_rules.png")}',
+          );
+        },
+        backgroundColor: Colors.orange,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.image),
       ),
     );
   }
@@ -169,7 +187,9 @@ class _NoticeBoardScreenState extends ConsumerState<NoticeBoardScreen> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _getCategoryColor(notice.category).withOpacity(0.1),
+                      color: _getCategoryColor(
+                        notice.category,
+                      ).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: _getCategoryColor(notice.category),
@@ -188,16 +208,13 @@ class _NoticeBoardScreenState extends ConsumerState<NoticeBoardScreen> {
                   const Spacer(),
                   Text(
                     _formatDate(notice.date),
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Notice Title
               Text(
                 notice.title,
@@ -207,43 +224,33 @@ class _NoticeBoardScreenState extends ConsumerState<NoticeBoardScreen> {
                   color: notice.isImportant ? Colors.red[800] : null,
                 ),
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Notice Content Preview
               Text(
                 notice.content,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[700],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
-              
+
               if (notice.attachmentUrl != null) ...[
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    Icon(
-                      Icons.attach_file,
-                      color: Colors.blue[600],
-                      size: 20,
-                    ),
+                    Icon(Icons.attach_file, color: Colors.blue[600], size: 20),
                     const SizedBox(width: 8),
                     Text(
                       'Attachment available',
-                      style: TextStyle(
-                        color: Colors.blue[600],
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.blue[600], fontSize: 12),
                     ),
                   ],
                 ),
               ],
-              
+
               const SizedBox(height: 12),
-              
+
               // Read More Button
               Align(
                 alignment: Alignment.centerRight,
@@ -277,7 +284,7 @@ class _NoticeBoardScreenState extends ConsumerState<NoticeBoardScreen> {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date).inDays;
-    
+
     if (difference == 0) {
       return 'Today';
     } else if (difference == 1) {
@@ -292,166 +299,178 @@ class _NoticeBoardScreenState extends ConsumerState<NoticeBoardScreen> {
   void _showFilterDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Filter by Category'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: const Text('All Categories'),
-              leading: Radio<String?>(
-                value: null,
-                groupValue: selectedCategory,
-                onChanged: (value) {
-                  setState(() {
-                    selectedCategory = value;
-                  });
-                  Navigator.of(context).pop();
-                },
-              ),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Filter by Category'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: const Text('All Categories'),
+                  leading: Radio<String?>(
+                    value: null,
+                    groupValue: selectedCategory,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedCategory = value;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+                ...categories.map(
+                  (category) => ListTile(
+                    title: Text(category),
+                    leading: Radio<String?>(
+                      value: category,
+                      groupValue: selectedCategory,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCategory = value;
+                        });
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
-            ...categories.map((category) => ListTile(
-              title: Text(category),
-              leading: Radio<String?>(
-                value: category,
-                groupValue: selectedCategory,
-                onChanged: (value) {
-                  setState(() {
-                    selectedCategory = value;
-                  });
-                  Navigator.of(context).pop();
-                },
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
               ),
-            )),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   void _showNoticeDetails(Notice notice) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (notice.isImportant)
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  'IMPORTANT',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            const SizedBox(height: 8),
-            Text(notice.title),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                notice.content,
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
+      builder:
+          (context) => AlertDialog(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (notice.isImportant)
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _getCategoryColor(notice.category).withOpacity(0.1),
+                      color: Colors.red,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: _getCategoryColor(notice.category),
-                        width: 1,
-                      ),
                     ),
-                    child: Text(
-                      notice.category,
+                    child: const Text(
+                      'IMPORTANT',
                       style: TextStyle(
-                        color: _getCategoryColor(notice.category),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  const Spacer(),
-                  Text(
-                    _formatDate(notice.date),
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-              if (notice.attachmentUrl != null) ...[
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.attach_file,
-                      color: Colors.blue[600],
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Attachment: ${notice.attachmentUrl}',
-                      style: TextStyle(
-                        color: Colors.blue[600],
-                        fontSize: 14,
+                const SizedBox(height: 8),
+                Text(notice.title),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(notice.content, style: const TextStyle(fontSize: 16)),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getCategoryColor(
+                            notice.category,
+                          ).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _getCategoryColor(notice.category),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          notice.category,
+                          style: TextStyle(
+                            color: _getCategoryColor(notice.category),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
+                      const Spacer(),
+                      Text(
+                        _formatDate(notice.date),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                      ),
+                    ],
+                  ),
+                  if (notice.attachmentUrl != null) ...[
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.attach_file,
+                          color: Colors.blue[600],
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Attachment: ${notice.attachmentUrl}',
+                          style: TextStyle(
+                            color: Colors.blue[600],
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+              if (notice.attachmentUrl != null) ...[
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    // Navigate to image notice screen
+                    context.push(
+                      '/image-notice?title=${Uri.encodeComponent(notice.title)}&imageURL=${Uri.encodeComponent(notice.attachmentUrl!)}',
+                    );
+                  },
+                  icon: const Icon(Icons.image),
+                  label: const Text('View Image'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Handle attachment download
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Download functionality coming soon!'),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.download),
+                  label: const Text('Download'),
                 ),
               ],
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-          if (notice.attachmentUrl != null)
-            ElevatedButton.icon(
-              onPressed: () {
-                // Handle attachment download
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Download functionality coming soon!'),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.download),
-              label: const Text('Download'),
-            ),
-        ],
-      ),
     );
   }
 }

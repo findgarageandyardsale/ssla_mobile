@@ -42,7 +42,7 @@ class RulesScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildRulesSection('General Conduct', Icons.people, [
+                  _buildRulesSection('📚 Homework And Home Study', Icons.people, [
                     'Students must maintain discipline and decorum at all times.',
                     'Respect for teachers, staff, and fellow students is mandatory.',
                     'Use of inappropriate language or behavior is strictly prohibited.',
