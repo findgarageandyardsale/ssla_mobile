@@ -48,7 +48,7 @@ class CoursesNotifier extends StateNotifier<AsyncValue<List<Course>>> {
           id: '6',
           name: 'Sewa Projectt',
 
-          imageUrl: 'assets/courses/sewa_project.png',
+          imageUrl: 'assets/courses/sewa_project.jpg',
         ),
       ];
 
