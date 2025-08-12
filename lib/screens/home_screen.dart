@@ -325,18 +325,21 @@ class HomeScreen extends ConsumerWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
+          Container(
+            height: 320, // Custom height for drawer header
             decoration: const BoxDecoration(
               gradient: AppColors.primaryGradient,
             ),
-            child: Row(
-              spacing: 12,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                SizedBox(height: 35),
                 Image.asset(
                   'assets/ssla_logo_white.png',
-                  height: 50,
-                  width: 50,
+                  height: 120,
+                  width: 120,
                   errorBuilder: (context, error, stackTrace) {
                     return const Icon(
                       Icons.school,
@@ -347,14 +350,15 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     spacing: 6,
                     children: [
                       Text(
                         'ਵਿਦਿਆ ਵਿਚਾਰੀ ਤਾਂ ਪਰਉਪਕਾਰੀ',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -362,29 +366,22 @@ class HomeScreen extends ConsumerWidget {
                         'SIKH SCHOOL OF LOS ANGELES',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
                         'KHALSA CARE FOUNDATIONn',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                        style: TextStyle(color: Colors.white, fontSize: 14),
                       ),
-                      Flexible(
-                        child: Row(
-                          spacing: 6,
-                          children: [
-                            Icon(Icons.location_on, color: Colors.red),
-                            Expanded(
-                              child: Text(
-                                '9989 LAUREL CANYON BLVD.,PACOIMA, CA, 91331',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ],
+
+                      Text(
+                        '9989 LAUREL CANYON BLVD.,PACOIMA, CA, 91331',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
                         ),
                       ),
                     ],
