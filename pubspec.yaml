@@ -56,6 +56,9 @@ dependencies:
   
   # URL launcher
   url_launcher: ^6.2.4
+  
+  # Email functionality
+  emailjs: ^1.2.0
 
 dev_dependencies:
   flutter_test:

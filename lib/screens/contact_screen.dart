@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/school_provider.dart';
+import '../services/email_service.dart';
 import '../utils/app_colors.dart';
 
 class ContactScreen extends ConsumerStatefulWidget {
@@ -14,16 +15,12 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _subjectController = TextEditingController();
   final _messageController = TextEditingController();
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
-    _phoneController.dispose();
-    _subjectController.dispose();
     _messageController.dispose();
     super.dispose();
   }
@@ -31,6 +28,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
   @override
   Widget build(BuildContext context) {
     final schoolInfoAsync = ref.watch(schoolProvider);
+    final emailSendingState = ref.watch(emailSendingProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Contact Us')),
@@ -140,63 +138,24 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
                                 },
                               ),
                               const SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: _emailController,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Email',
-                                        border: OutlineInputBorder(),
-                                        prefixIcon: Icon(Icons.email),
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter your email';
-                                        }
-                                        if (!RegExp(
-                                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                                        ).hasMatch(value)) {
-                                          return 'Please enter a valid email';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: _phoneController,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Phone',
-                                        border: OutlineInputBorder(),
-                                        prefixIcon: Icon(Icons.phone),
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter your phone number';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
+
                               TextFormField(
-                                controller: _subjectController,
+                                controller: _emailController,
                                 decoration: const InputDecoration(
-                                  labelText: 'Subject',
+                                  labelText: 'Email',
                                   border: OutlineInputBorder(),
-                                  prefixIcon: Icon(Icons.subject),
+                                  prefixIcon: Icon(Icons.email),
                                 ),
                                 validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter a subject';
+                                  if (value == null ||
+                                      value.isEmpty ||
+                                      !value.contains('@')) {
+                                    return 'Please enter a valid email';
                                   }
                                   return null;
                                 },
                               ),
+
                               const SizedBox(height: 16),
                               TextFormField(
                                 controller: _messageController,
@@ -222,9 +181,25 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
                                 width: double.infinity,
                                 height: 50,
                                 child: ElevatedButton.icon(
-                                  onPressed: _submitForm,
-                                  icon: const Icon(Icons.send),
-                                  label: const Text('Send Message'),
+                                  onPressed:
+                                      emailSendingState.isLoading
+                                          ? null
+                                          : _submitForm,
+                                  icon:
+                                      emailSendingState.isLoading
+                                          ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                          : const Icon(Icons.send),
+                                  label: Text(
+                                    emailSendingState.isLoading
+                                        ? 'Sending...'
+                                        : 'Send Message',
+                                  ),
                                 ),
                               ),
                             ],
@@ -325,36 +300,87 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
     );
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Show success dialog
-      showDialog(
-        context: context,
-        builder:
-            (context) => AlertDialog(
-              title: const Text('Message Sent!'),
-              content: const Text(
-                'Thank you for your message. We will get back to you soon!',
-              ),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _clearForm();
-                  },
-                  child: const Text('OK'),
+      try {
+        // Show loading dialog
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder:
+              (context) => const AlertDialog(
+                content: Row(
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(width: 16),
+                    Text('Sending message...'),
+                  ],
                 ),
-              ],
-            ),
-      );
+              ),
+        );
+
+        // Send email using the email service
+        await ref
+            .read(emailSendingProvider.notifier)
+            .sendEmail(
+              name: _nameController.text,
+              email: _emailController.text,
+              message: _messageController.text,
+            );
+
+        // Close loading dialog
+        Navigator.of(context).pop();
+
+        // Show success dialog
+        showDialog(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: const Text('Message Sent!'),
+                content: const Text(
+                  'Thank you for your message. We will get back to you soon!',
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _clearForm();
+                      ref.read(emailSendingProvider.notifier).reset();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+        );
+      } catch (error) {
+        // Close loading dialog
+        Navigator.of(context).pop();
+
+        // Show error dialog
+        showDialog(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: const Text('Error'),
+                content: Text('Failed to send message: $error'),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      ref.read(emailSendingProvider.notifier).reset();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+        );
+      }
     }
   }
 
   void _clearForm() {
     _nameController.clear();
     _emailController.clear();
-    _phoneController.clear();
-    _subjectController.clear();
     _messageController.clear();
   }
 }
