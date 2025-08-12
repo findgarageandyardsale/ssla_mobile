@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
 import 'utils/app_colors.dart';
 import 'screens/home_screen.dart';
@@ -12,8 +13,17 @@ import 'screens/calendar_screen.dart';
 import 'screens/registration_screen.dart';
 import 'screens/rules_screen.dart';
 import 'screens/image_notice_screen.dart';
+import 'services/notification_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
+
+  // Initialize notification service
+  await NotificationService().initialize();
+
   runApp(const ProviderScope(child: MyApp()));
 }
 

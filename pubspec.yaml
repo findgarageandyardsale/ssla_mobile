@@ -51,6 +51,18 @@ dependencies:
   # HTTP requests
   http: ^1.1.2
   
+  # Signature pad
+  signature: ^5.4.1
+  
+  # Form building
+  flutter_form_builder: ^9.1.1
+  form_builder_validators: ^11.1.2
+  
+  # Firebase and Push Notifications
+  firebase_core: ^2.24.2
+  firebase_messaging: ^14.7.10
+  flutter_local_notifications: ^19.3.0
+  
   # Local storage
   shared_preferences: ^2.2.2
   
@@ -67,6 +79,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_local_notifications: ^19.1.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
