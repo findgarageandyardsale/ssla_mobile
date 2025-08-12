@@ -93,7 +93,7 @@ class RulesScreen extends StatelessWidget {
 
                   const SizedBox(height: 32),
 
-                  // Important Notice
+                  /*   // Important Notice
                   Card(
                     color: Colors.amber[50],
                     child: Padding(
@@ -172,6 +172,7 @@ class RulesScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+              */
                 ],
               ),
             ),
@@ -194,7 +195,7 @@ class RulesScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (imageUrl != null)
-              Image.asset(imageUrl, width: 100, height: 100),
+              Image.asset(imageUrl, width: double.infinity, height: 150),
             const SizedBox(height: 16),
             Text(
               title,
