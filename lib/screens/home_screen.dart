@@ -122,7 +122,7 @@ class HomeScreen extends ConsumerWidget {
                           ),
                         ),
                         TextButton(
-                          onPressed: () => context.go('/gallery'),
+                          onPressed: () => context.push('/gallery'),
                           child: const Text('View All'),
                         ),
                       ],

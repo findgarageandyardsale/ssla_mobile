@@ -12,141 +12,84 @@ class RulesScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hero Section
-            Container(
-              width: double.infinity,
-              height: 150,
-              decoration: const BoxDecoration(
-                gradient: AppColors.primaryGradient,
-              ),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.rule, size: 50, color: Colors.white),
-                  SizedBox(height: 16),
-                  Text(
-                    'School Rules & Regulations',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
             // Rules Content
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildRulesSection('📚 Homework And Home Study', Icons.people, [
-                    'Students must maintain discipline and decorum at all times.',
-                    'Respect for teachers, staff, and fellow students is mandatory.',
-                    'Use of inappropriate language or behavior is strictly prohibited.',
-                    'Students must follow the school dress code.',
-                    'Mobile phones and electronic devices are not allowed during class hours.',
-                  ]),
-
-                  const SizedBox(height: 24),
-
-                  _buildRulesSection('Academic Rules', Icons.school, [
-                    'Regular attendance is compulsory for all students.',
-                    'Students must complete all assignments and homework on time.',
-                    'Cheating or plagiarism will result in severe disciplinary action.',
-                    'Students must maintain academic integrity in all activities.',
-                    'Regular participation in class discussions is expected.',
-                  ]),
-
-                  const SizedBox(height: 24),
-
-                  _buildRulesSection('Attendance & Punctuality', Icons.access_time, [
-                    'Students must arrive at school 10 minutes before the first bell.',
-                    'Late arrival will be recorded and may affect attendance.',
-                    'Absence from school requires a written explanation from parents.',
-                    'Medical certificates are required for absences longer than 3 days.',
-                    'Students must attend all mandatory school events and functions.',
-                  ]),
-
-                  const SizedBox(height: 24),
-
-                  _buildRulesSection('Dress Code', Icons.checkroom, [
-                    'Students must wear the complete school uniform.',
-                    'Uniform must be clean, pressed, and properly fitted.',
-                    'Hair should be neat and well-groomed.',
-                    'No jewelry or accessories except those specified by the school.',
-                    'Sports shoes are only allowed during physical education classes.',
-                  ]),
-
-                  const SizedBox(height: 24),
-
-                  _buildRulesSection('Library Rules', Icons.library_books, [
-                    'Maintain silence in the library at all times.',
-                    'Books must be handled with care and returned on time.',
-                    'No food or drinks are allowed in the library.',
-                    'Students must follow the borrowing rules and limits.',
-                    'Damaged books must be reported immediately.',
-                  ]),
-
-                  const SizedBox(height: 24),
-
                   _buildRulesSection(
-                    'Sports & Physical Education',
-                    Icons.sports,
-                    [
-                      'Participation in physical education is mandatory.',
-                      'Students must wear appropriate sports attire.',
-                      'Follow safety guidelines for all sports activities.',
-                      'Sports equipment must be used responsibly.',
-                      'Respect for coaches and fellow players is essential.',
+                    title: '📚 Homework And Home Study',
+                    imageUrl: 'assets/rule/study.png',
+                    rules: [
+                      'Plan a daily homework time',
+                      'Take home everything you will need',
+                      'Don\'t study with the TV on',
+                      'Read and follow all directions',
+                      'Do your work neatly and carefully',
+                      'Ask for help if you need it, but do the work yourself',
+                      'Keep the top of your desk uncluttered',
+                      'Keep your homework in a special place',
+                      'Get into a routine by studying at the same time every day',
+                      'Return homework on time',
                     ],
                   ),
 
                   const SizedBox(height: 24),
 
-                  _buildRulesSection('Cafeteria & Food', Icons.restaurant, [
-                    'Maintain cleanliness in the cafeteria area.',
-                    'No food wastage is allowed.',
-                    'Follow the designated lunch break schedule.',
-                    'Students must queue properly for food service.',
-                    'Report any food-related issues to the staff immediately.',
-                  ]),
-
-                  const SizedBox(height: 24),
-
-                  _buildRulesSection('Transportation', Icons.directions_bus, [
-                    'Students using school transport must follow bus rules.',
-                    'Maintain discipline while boarding and alighting.',
-                    'No eating or drinking on the bus.',
-                    'Follow the designated pickup and drop-off times.',
-                    'Report any transport-related issues to the transport coordinator.',
-                  ]),
-
-                  const SizedBox(height: 24),
-
-                  _buildRulesSection('Disciplinary Actions', Icons.warning, [
-                    'Minor violations may result in warnings or detention.',
-                    'Serious violations may lead to suspension or expulsion.',
-                    'Parents will be informed of all disciplinary actions.',
-                    'Students have the right to appeal disciplinary decisions.',
-                    'Repeated violations will result in stricter penalties.',
-                  ]),
+                  _buildRulesSection(
+                    title: '📚 To and From School',
+                    imageUrl: 'assets/rule/to_from.png',
+                    rules: [
+                      'Classes begin at 9:30 a.m. The students must arrive between 9:15 to 9:25 a.m.',
+                      'Students are not allowed to leave the classroom without permission anytime.',
+                      'Students are dismissed at 12:50 p.m. Parents of students under age 6 must check with the teacher place of student dismissal.',
+                      'Absences and tardies must be verified by a note. Three absences or tardies without a note may result in suspension.',
+                    ],
+                  ),
 
                   const SizedBox(height: 24),
 
                   _buildRulesSection(
-                    'Parental Responsibilities',
-                    Icons.family_restroom,
-                    [
-                      'Ensure regular attendance of their children.',
-                      'Monitor academic progress and homework completion.',
-                      'Attend parent-teacher meetings regularly.',
-                      'Support school policies and disciplinary measures.',
-                      'Maintain open communication with teachers and staff.',
+                    title: '📚 General Rules',
+                    imageUrl: 'assets/rule/general_rules.jpg',
+                    rules: [
+                      'Vulgar or profane language is prohibited and may result in a suspension.',
+                      'No toys, ipods, or electronic games are allowed while you are in the school.',
+                      'No climbing on or over any fence.',
+                      'Students are to keep classroom, bathroom, and Gurdwara premises neat and clean.',
+                      'Students must wear school uniform.',
                     ],
                   ),
+
+                  const SizedBox(height: 24),
+
+                  _buildRulesSection(
+                    title: '📚 Discipline Policies',
+                    imageUrl: 'assets/rule/discipline_policies.png',
+                    rules: [
+                      'Verbal warning',
+                      'Parent notification or conferences',
+                      'Suspension',
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  _buildRulesSection(
+                    title: '📚 Classroom Rules',
+                    imageUrl: 'assets/rule/classroom_rules.png',
+                    rules: [
+                      'Listen carefully.',
+                      'Follow directions.',
+                      'Work quietly. Do not disturb others who are working.',
+                      'Respect others. Be kind with your words and actions.',
+                      'Respect school and personal property.',
+                      'Be quiet all times. Raise your hand if need to speak.',
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
 
                   const SizedBox(height: 32),
 
@@ -238,7 +181,11 @@ class RulesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRulesSection(String title, IconData icon, List<String> rules) {
+  Widget _buildRulesSection({
+    required String title,
+    required List<String> rules,
+    String? imageUrl,
+  }) {
     return Card(
       elevation: 2,
       child: Padding(
@@ -246,18 +193,12 @@ class RulesScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(icon, color: AppColors.primary, size: 24),
-                const SizedBox(width: 12),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            if (imageUrl != null)
+              Image.asset(imageUrl, width: 100, height: 100),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             ...rules.map(

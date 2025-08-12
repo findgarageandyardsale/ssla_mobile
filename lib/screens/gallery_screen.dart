@@ -39,12 +39,12 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('School Gallery'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: _showFilterDialog,
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.filter_list),
+        //     onPressed: _showFilterDialog,
+        //   ),
+        // ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -52,7 +52,7 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
         },
         child: Column(
           children: [
-            // Category Filter
+            /*    // Category Filter
             if (selectedCategory != null)
               Container(
                 padding: const EdgeInsets.all(16.0),
@@ -77,7 +77,7 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
                   ],
                 ),
               ),
-
+*/
             // Gallery Grid
             Expanded(
               child: galleryAsync.when(

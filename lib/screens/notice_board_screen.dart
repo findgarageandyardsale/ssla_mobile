@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../providers/notices_provider.dart';
 import '../models/notice.dart';
 
@@ -131,17 +130,6 @@ class _NoticeBoardScreenState extends ConsumerState<NoticeBoardScreen> {
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Example: Navigate to image notice screen
-          context.push(
-            '/image-notice?title=${Uri.encodeComponent("Sample Image Notice")}&imageURL=${Uri.encodeComponent("assets/classroom_rules.png")}',
-          );
-        },
-        backgroundColor: Colors.orange,
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.image),
       ),
     );
   }
@@ -444,18 +432,7 @@ class _NoticeBoardScreenState extends ConsumerState<NoticeBoardScreen> {
                 onPressed: () => Navigator.of(context).pop(),
                 child: const Text('Close'),
               ),
-              if (notice.attachmentUrl != null) ...[
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    // Navigate to image notice screen
-                    context.push(
-                      '/image-notice?title=${Uri.encodeComponent(notice.title)}&imageURL=${Uri.encodeComponent(notice.attachmentUrl!)}',
-                    );
-                  },
-                  icon: const Icon(Icons.image),
-                  label: const Text('View Image'),
-                ),
+              if (notice.attachmentUrl != null)
                 ElevatedButton.icon(
                   onPressed: () {
                     // Handle attachment download
@@ -468,7 +445,6 @@ class _NoticeBoardScreenState extends ConsumerState<NoticeBoardScreen> {
                   icon: const Icon(Icons.download),
                   label: const Text('Download'),
                 ),
-              ],
             ],
           ),
     );
