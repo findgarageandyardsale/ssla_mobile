@@ -7,6 +7,9 @@ class SchoolInfo {
   final String phone;
   final String email;
   final String website;
+  final String aboutUsDescription;
+  final String aboutUsNurturing;
+  final String aboutUsWeeklySchedule;
 
   SchoolInfo({
     required this.name,
@@ -17,6 +20,9 @@ class SchoolInfo {
     required this.phone,
     required this.email,
     required this.website,
+    required this.aboutUsDescription,
+    required this.aboutUsNurturing,
+    required this.aboutUsWeeklySchedule,
   });
 
   factory SchoolInfo.fromJson(Map<String, dynamic> json) {
@@ -29,6 +35,9 @@ class SchoolInfo {
       phone: json['phone'] ?? '',
       email: json['email'] ?? '',
       website: json['website'] ?? '',
+      aboutUsDescription: json['aboutUsDescription'] ?? '',
+      aboutUsNurturing: json['aboutUsNurturing'] ?? '',
+      aboutUsWeeklySchedule: json['aboutUsWeeklySchedule'] ?? '',
     );
   }
 
@@ -42,6 +51,9 @@ class SchoolInfo {
       'phone': phone,
       'email': email,
       'website': website,
+      'aboutUsDescription': aboutUsDescription,
+      'aboutUsNurturing': aboutUsNurturing,
+      'aboutUsWeeklySchedule': aboutUsWeeklySchedule,
     };
   }
 }

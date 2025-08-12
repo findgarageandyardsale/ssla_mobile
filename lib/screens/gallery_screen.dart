@@ -167,7 +167,7 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
                 },
               ),
             ),
-            Padding(
+            /*  Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,6 +223,7 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
                 ],
               ),
             ),
+         */
           ],
         ),
       ),

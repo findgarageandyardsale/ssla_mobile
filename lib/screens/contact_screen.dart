@@ -42,30 +42,6 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Hero Section
-              Container(
-                width: double.infinity,
-                height: 150,
-                decoration: const BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                ),
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.contact_phone, size: 50, color: Colors.white),
-                    SizedBox(height: 16),
-                    Text(
-                      'Get in Touch',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
               // Contact Information
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -259,7 +235,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
                   ],
                 ),
               ),
-
+              /*
               // Map Section (Placeholder)
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -301,6 +277,7 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
                   ],
                 ),
               ),
+          */
             ],
           ),
         ),

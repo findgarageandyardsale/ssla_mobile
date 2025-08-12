@@ -1,22 +1,22 @@
 class Course {
   final String id;
   final String name;
-  final String description;
-  final String duration;
-  final String level;
-  final List<String> subjects;
+  final String? description;
+  final String? duration;
+  final String? level;
+  final List<String>? subjects;
   final String imageUrl;
-  final double fee;
+  final double? fee;
 
   Course({
     required this.id,
     required this.name,
-    required this.description,
-    required this.duration,
-    required this.level,
-    required this.subjects,
+    this.description,
+    this.duration,
+    this.level,
+    this.subjects,
     required this.imageUrl,
-    required this.fee,
+    this.fee,
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {

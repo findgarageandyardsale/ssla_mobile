@@ -16,53 +16,39 @@ class CoursesNotifier extends StateNotifier<AsyncValue<List<Course>>> {
       final courses = [
         Course(
           id: '1',
-          name: 'Primary Education',
-          description:
-              'Foundation years focusing on basic literacy, numeracy, and social skills.',
-          duration: '6 years',
-          level: 'Primary',
-          subjects: [
-            'English',
-            'Mathematics',
-            'Science',
-            'Social Studies',
-            'Arts',
-            'Physical Education',
-          ],
-          imageUrl:
-              'https://via.placeholder.com/300x200/4CAF50/FFFFFF?text=Primary',
-          fee: 5000.0,
+          name: 'Punjabi Language',
+
+          imageUrl: 'assets/courses/punjabi.png',
         ),
         Course(
           id: '2',
-          name: 'Secondary Education',
-          description:
-              'Comprehensive education preparing students for higher studies.',
-          duration: '4 years',
-          level: 'Secondary',
-          subjects: [
-            'English',
-            'Mathematics',
-            'Physics',
-            'Chemistry',
-            'Biology',
-            'History',
-            'Geography',
-          ],
-          imageUrl:
-              'https://via.placeholder.com/300x200/2196F3/FFFFFF?text=Secondary',
-          fee: 7000.0,
+          name: 'Sikh Theology',
+
+          imageUrl: 'assets/courses/sikh_theology.jpg',
         ),
         Course(
           id: '3',
-          name: 'Higher Secondary',
-          description: 'Specialized streams preparing for university entrance.',
-          duration: '2 years',
-          level: 'Higher Secondary',
-          subjects: ['Science Stream', 'Commerce Stream', 'Arts Stream'],
-          imageUrl:
-              'https://via.placeholder.com/300x200/FF9800/FFFFFF?text=Higher+Secondary',
-          fee: 8000.0,
+          name: 'Sikh History',
+
+          imageUrl: 'assets/courses/sikh_history.jpeg',
+        ),
+        Course(
+          id: '4',
+          name: 'Gurbani Santhya',
+
+          imageUrl: 'assets/courses/gurbani_ santhiya.jpg',
+        ),
+        Course(
+          id: '5',
+          name: 'Gurmat Sangeet',
+
+          imageUrl: 'assets/courses/gurmat_sangeet.png',
+        ),
+        Course(
+          id: '6',
+          name: 'Sewa Projectt',
+
+          imageUrl: 'assets/courses/sewa_project.png',
         ),
       ];
 

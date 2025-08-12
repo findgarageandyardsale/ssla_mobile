@@ -17,17 +17,7 @@ class HomeScreen extends ConsumerWidget {
     final galleryAsync = ref.watch(galleryProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('SSLA School'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('SSLA School')),
       drawer: _buildDrawer(context),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -339,7 +329,8 @@ class HomeScreen extends ConsumerWidget {
             decoration: const BoxDecoration(
               gradient: AppColors.primaryGradient,
             ),
-            child: Column(
+            child: Row(
+              spacing: 12,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Image.asset(
@@ -354,18 +345,50 @@ class HomeScreen extends ConsumerWidget {
                     );
                   },
                 ),
-                SizedBox(height: 8),
-                Text(
-                  'SSLA School',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 6,
+                    children: [
+                      Text(
+                        'ਵਿਦਿਆ ਵਿਚਾਰੀ ਤਾਂ ਪਰਉਪਕਾਰੀ',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'SIKH SCHOOL OF LOS ANGELES',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'KHALSA CARE FOUNDATIONn',
+                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      ),
+                      Flexible(
+                        child: Row(
+                          spacing: 6,
+                          children: [
+                            Icon(Icons.location_on, color: Colors.red),
+                            Expanded(
+                              child: Text(
+                                '9989 LAUREL CANYON BLVD.,PACOIMA, CA, 91331',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Text(
-                  'Excellence in Education',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),
@@ -373,47 +396,47 @@ class HomeScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.home),
             title: const Text('Home'),
-            onTap: () => context.go('/'),
+            onTap: () => context.push('/'),
           ),
           ListTile(
             leading: const Icon(Icons.info),
             title: const Text('About Us'),
-            onTap: () => context.go('/about'),
+            onTap: () => context.push('/about'),
           ),
           ListTile(
             leading: const Icon(Icons.book),
             title: const Text('Courses'),
-            onTap: () => context.go('/courses'),
+            onTap: () => context.push('/courses'),
           ),
           ListTile(
             leading: const Icon(Icons.photo_library),
             title: const Text('Gallery'),
-            onTap: () => context.go('/gallery'),
+            onTap: () => context.push('/gallery'),
           ),
           ListTile(
             leading: const Icon(Icons.contact_phone),
             title: const Text('Contact'),
-            onTap: () => context.go('/contact'),
+            onTap: () => context.push('/contact'),
           ),
           ListTile(
             leading: const Icon(Icons.announcement),
             title: const Text('Notice Board'),
-            onTap: () => context.go('/notices'),
+            onTap: () => context.push('/notices'),
           ),
           ListTile(
             leading: const Icon(Icons.calendar_today),
             title: const Text('Calendar'),
-            onTap: () => context.go('/calendar'),
+            onTap: () => context.push('/calendar'),
           ),
           ListTile(
             leading: const Icon(Icons.app_registration),
             title: const Text('Registration'),
-            onTap: () => context.go('/registration'),
+            onTap: () => context.push('/registration'),
           ),
           ListTile(
             leading: const Icon(Icons.rule),
             title: const Text('Rules & Regulations'),
-            onTap: () => context.go('/rules'),
+            onTap: () => context.push('/rules'),
           ),
         ],
       ),

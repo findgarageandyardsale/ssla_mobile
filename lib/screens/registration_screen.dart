@@ -355,22 +355,22 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 12),
-                                _buildCourseDetail(
-                                  'Course',
-                                  selectedCourse!.name,
-                                ),
-                                _buildCourseDetail(
-                                  'Level',
-                                  selectedCourse!.level,
-                                ),
-                                _buildCourseDetail(
-                                  'Duration',
-                                  selectedCourse!.duration,
-                                ),
-                                _buildCourseDetail(
-                                  'Fee',
-                                  '\$${selectedCourse!.fee.toStringAsFixed(0)}',
-                                ),
+                                // _buildCourseDetail(
+                                //   'Course',
+                                //   selectedCourse!.name,
+                                // ),
+                                // _buildCourseDetail(
+                                //   'Level',
+                                //   selectedCourse!.level,
+                                // ),
+                                // _buildCourseDetail(
+                                //   'Duration',
+                                //   selectedCourse!.duration,
+                                // ),
+                                // _buildCourseDetail(
+                                //   'Fee',
+                                //   '\$${selectedCourse!.fee.toStringAsFixed(0)}',
+                                // ),
                               ],
                             ),
                           ),

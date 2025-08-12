@@ -22,33 +22,21 @@ class AboutScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 16),
               // Hero Section
               Container(
                 width: double.infinity,
                 height: 200,
-                decoration: const BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                ),
+                // decoration: const BoxDecoration(
+                //   gradient: AppColors.primaryGradient,
+                // ),
                 child: schoolInfoAsync.when(
                   data:
-                      (schoolInfo) => Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.school,
-                            size: 60,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            schoolInfo.name,
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
+                      (schoolInfo) => Image.asset(
+                        'assets/about_us.png',
+                        width: double.infinity,
+                        height: 200,
+                        fit: BoxFit.cover,
                       ),
                   loading:
                       () => const Center(
@@ -79,16 +67,11 @@ class AboutScreen extends ConsumerWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Text(
-                                schoolInfo.description,
-                                style: const TextStyle(fontSize: 16),
-                                textAlign: TextAlign.justify,
-                              ),
-                            ),
+                          const SizedBox(height: 12),
+                          Text(
+                            schoolInfo.aboutUsDescription,
+                            style: const TextStyle(fontSize: 16),
+                            textAlign: TextAlign.justify,
                           ),
                         ],
                       ),
@@ -108,31 +91,20 @@ class AboutScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Our Philosophy',
+                            'A Nurturing Environment for Lifelong Learning Since 1997',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
                           Card(
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(
-                                    Icons.lightbulb,
-                                    color: AppColors.primary,
-                                    size: 30,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    schoolInfo.philosophy,
-                                    style: const TextStyle(fontSize: 16),
-                                    textAlign: TextAlign.justify,
-                                  ),
-                                ],
+                              child: Text(
+                                schoolInfo.aboutUsNurturing,
+                                style: const TextStyle(fontSize: 16),
+                                textAlign: TextAlign.justify,
                               ),
                             ),
                           ),
@@ -144,8 +116,7 @@ class AboutScreen extends ConsumerWidget {
                       (error, stack) => const Text('Error loading philosophy'),
                 ),
               ),
-
-              // Vision Section
+              // Philosophy Section
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: schoolInfoAsync.when(
@@ -154,132 +125,20 @@ class AboutScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Our Vision',
+                            'Weekly Schedule',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
                           Card(
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(
-                                    Icons.visibility,
-                                    color: AppColors.primary,
-                                    size: 30,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    schoolInfo.vision,
-                                    style: const TextStyle(fontSize: 16),
-                                    textAlign: TextAlign.justify,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                  loading:
-                      () => const Center(child: CircularProgressIndicator()),
-                  error: (error, stack) => const Text('Error loading vision'),
-                ),
-              ),
-
-              // Mission Section
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: schoolInfoAsync.when(
-                  data:
-                      (schoolInfo) => Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Our Mission',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(
-                                    Icons.flag,
-                                    color: AppColors.primary,
-                                    size: 30,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    schoolInfo.vision,
-                                    style: const TextStyle(fontSize: 16),
-                                    textAlign: TextAlign.justify,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                  loading:
-                      () => const Center(child: CircularProgressIndicator()),
-                  error: (error, stack) => const Text('Error loading mission'),
-                ),
-              ),
-
-              // Contact Information
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: schoolInfoAsync.when(
-                  data:
-                      (schoolInfo) => Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Contact Information',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                children: [
-                                  _buildContactItem(
-                                    Icons.location_on,
-                                    'Address',
-                                    schoolInfo.address,
-                                  ),
-                                  const Divider(),
-                                  _buildContactItem(
-                                    Icons.phone,
-                                    'Phone',
-                                    schoolInfo.phone,
-                                  ),
-                                  const Divider(),
-                                  _buildContactItem(
-                                    Icons.email,
-                                    'Email',
-                                    schoolInfo.email,
-                                  ),
-                                  const Divider(),
-                                  _buildContactItem(
-                                    Icons.language,
-                                    'Website',
-                                    schoolInfo.website,
-                                  ),
-                                ],
+                              child: Text(
+                                schoolInfo.aboutUsWeeklySchedule,
+                                style: const TextStyle(fontSize: 16),
+                                textAlign: TextAlign.justify,
                               ),
                             ),
                           ),
@@ -288,8 +147,7 @@ class AboutScreen extends ConsumerWidget {
                   loading:
                       () => const Center(child: CircularProgressIndicator()),
                   error:
-                      (error, stack) =>
-                          const Text('Error loading contact info'),
+                      (error, stack) => const Text('Error loading philosophy'),
                 ),
               ),
             ],
