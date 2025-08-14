@@ -2,10 +2,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
-import '../providers/courses_provider.dart';
-import '../models/course.dart';
-import '../utils/app_colors.dart';
+
+import '../services/supabase_service.dart';
+import '../services/email_service.dart';
 import '../widgets/courses_selection_widget.dart';
 import '../widgets/personal_information_widget.dart';
 import '../widgets/family_information_widget.dart';
@@ -62,12 +61,14 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   final _whatInspiresController = TextEditingController();
   final _favoriteSikhBookController = TextEditingController();
 
+  // Completed Courses Controller (for returning students)
+  final _completedCoursesController = TextEditingController();
+
   // Digital Signature Controllers
   final _studentDateOfSignatureController = TextEditingController();
   final _parentDateOfSignatureController = TextEditingController();
 
   List<String> selectedCourseIds = [];
-  String selectedGrade = 'Grade 1';
   DateTime? selectedDateOfBirth;
   String? selectedGender;
   String? selectedReturningStudent;
@@ -81,20 +82,9 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   Uint8List? studentSignature;
   Uint8List? parentSignature;
 
-  final List<String> grades = [
-    'Grade 1',
-    'Grade 2',
-    'Grade 3',
-    'Grade 4',
-    'Grade 5',
-    'Grade 6',
-    'Grade 7',
-    'Grade 8',
-    'Grade 9',
-    'Grade 10',
-    'Grade 11',
-    'Grade 12',
-  ];
+  // Signature URLs from Supabase storage
+  String? studentSignatureUrl;
+  String? parentSignatureUrl;
   final List<String> courses = [
     'Punjabi Language',
 
@@ -145,6 +135,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
     // Dispose extra information controllers
     _whatInspiresController.dispose();
     _favoriteSikhBookController.dispose();
+    _completedCoursesController.dispose();
 
     // Dispose digital signature controllers
     _studentDateOfSignatureController.dispose();
@@ -225,7 +216,44 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                       },
                       onDateOfBirthTap: () => _selectDateOfBirth(context),
                     ),
-                    const SizedBox(height: 24),
+                    if (selectedReturningStudent != 'Yes') ...[
+                      const SizedBox(height: 16),
+                    ],
+
+                    // Completed Courses Section (for returning students)
+                    if (selectedReturningStudent == 'Yes') ...[
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _completedCoursesController,
+                        maxLines: 5,
+                        decoration: InputDecoration(
+                          labelText: 'List courses completed at SSLA *',
+                          hintText:
+                              'Please list all courses you have previously completed at SSLA...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: Colors.orange,
+                              width: 2,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.all(16),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please list your completed courses';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 24),
+                    ],
 
                     // Family Information Section
                     FamilyInformationWidget(
@@ -299,15 +327,59 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                           () => _selectDateOfSignature(context),
                       onParentDateOfSignatureTap:
                           () => _selectParentDateOfSignature(context),
-                      onStudentSignatureChanged: (signature) {
+                      onStudentSignatureChanged: (signature) async {
                         setState(() {
                           studentSignature = signature;
                         });
+
+                        // Upload signature to Supabase if signature data exists
+                        if (signature != null) {
+                          final studentName =
+                              _firstNameController.text.isNotEmpty
+                                  ? '${_firstNameController.text}_${_lastNameController.text}'
+                                  : 'student';
+                          final fileName = _generateSignatureFileName(
+                            'student',
+                            studentName,
+                          );
+
+                          final url = await _uploadSignatureToSupabase(
+                            signature,
+                            fileName,
+                          );
+                          if (url != null) {
+                            setState(() {
+                              studentSignatureUrl = url;
+                            });
+                          }
+                        }
                       },
-                      onParentSignatureChanged: (signature) {
+                      onParentSignatureChanged: (signature) async {
                         setState(() {
                           parentSignature = signature;
                         });
+
+                        // Upload signature to Supabase if signature data exists
+                        if (signature != null) {
+                          final studentName =
+                              _firstNameController.text.isNotEmpty
+                                  ? '${_firstNameController.text}_${_lastNameController.text}'
+                                  : 'student';
+                          final fileName = _generateSignatureFileName(
+                            'parent',
+                            studentName,
+                          );
+
+                          final url = await _uploadSignatureToSupabase(
+                            signature,
+                            fileName,
+                          );
+                          if (url != null) {
+                            setState(() {
+                              parentSignatureUrl = url;
+                            });
+                          }
+                        }
                       },
                     ),
                     const SizedBox(height: 24),
@@ -426,30 +498,20 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   }
 
   void _submitRegistration() {
+    // Check if completed courses are required for returning students
+    bool isCompletedCoursesValid = true;
+    if (selectedReturningStudent == 'Yes') {
+      isCompletedCoursesValid =
+          _completedCoursesController.text.trim().isNotEmpty;
+    }
+
     if (_formKey.currentState!.validate() &&
         selectedCourseIds.isNotEmpty &&
         studentSignature != null &&
-        parentSignature != null) {
-      // Show success dialog
-      showDialog(
-        context: context,
-        builder:
-            (context) => AlertDialog(
-              title: const Text('Registration Submitted!'),
-              content: const Text(
-                'Thank you for your registration. We will review your application and contact you soon with further details.',
-              ),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _clearForm();
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-      );
+        parentSignature != null &&
+        isCompletedCoursesValid) {
+      // Send registration email via EmailJS
+      _sendRegistrationEmail();
     } else if (selectedCourseIds.isEmpty) {
       // Show error for no courses selected
       ScaffoldMessenger.of(context).showSnackBar(
@@ -468,6 +530,14 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
           backgroundColor: Colors.red,
         ),
       );
+    } else if (!isCompletedCoursesValid) {
+      // Show error for missing completed courses
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please list your completed courses at SSLA'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } else {
       // Show error for form validation
       ScaffoldMessenger.of(context).showSnackBar(
@@ -477,6 +547,165 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
         ),
       );
     }
+  }
+
+  /// Send registration email via EmailJS
+  Future<void> _sendRegistrationEmail() async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder:
+            (context) => const AlertDialog(
+              content: Row(
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(width: 16),
+                  Text('Sending registration...'),
+                ],
+              ),
+            ),
+      );
+
+      // Prepare data for email
+      final personalInfo = {
+        'firstName': _firstNameController.text,
+        'middleName': _middleNameController.text,
+        'lastName': _lastNameController.text,
+        'age': _ageController.text,
+        'gender': selectedGender ?? '',
+        'dateOfBirth': _dateOfBirthController.text,
+        'studentSignatureDate': _studentDateOfSignatureController.text,
+        'parentSignatureDate': _parentDateOfSignatureController.text,
+      };
+
+      final familyInfo = {
+        'fatherName': _fatherNameController.text,
+        'motherName': _motherNameController.text,
+      };
+
+      final contactInfo = {
+        'address': _addressController.text,
+        'apartmentNo': _apartmentNoController.text,
+        'city': _cityController.text,
+        'state': _stateController.text,
+        'zipCode': _zipCodeController.text,
+        'homePhone': _homePhoneController.text,
+        'cellPhone': _cellPhoneController.text,
+      };
+
+      final emergencyInfo = {
+        'name': _emergencyContactNameController.text,
+        'phone': _emergencyContactPhoneController.text,
+        'address': _emergencyContactAddressController.text,
+        'apartmentNo': _emergencyContactApartmentNoController.text,
+        'city': _emergencyContactCityController.text,
+        'zipCode': _emergencyContactZipCodeController.text,
+      };
+
+      final extraInfo = {
+        'speakPunjabi': selectedSpeakPunjabi ?? '',
+        'readWritePunjabi': selectedReadWritePunjabi ?? '',
+        'whatInspires': _whatInspiresController.text,
+        'favoriteBook': _favoriteSikhBookController.text,
+        'homeworkTime': selectedHomeworkTime ?? '',
+      };
+
+      final studentName =
+          '${_firstNameController.text} ${_lastNameController.text}'.trim();
+      final email = _emailController.text;
+      final phone = _phoneController.text;
+
+      // Send email
+      final emailService = EmailService();
+      await emailService.sendRegistrationEmail(
+        studentName: studentName,
+        parentName: 'Parent/Guardian',
+        email: email,
+        phone: phone,
+        selectedCourses: selectedCourseIds,
+        completedCourses:
+            selectedReturningStudent == 'Yes'
+                ? _completedCoursesController.text
+                : null,
+        studentSignatureUrl: studentSignatureUrl,
+        parentSignatureUrl: parentSignatureUrl,
+        personalInfo: personalInfo,
+        familyInfo: familyInfo,
+        contactInfo: contactInfo,
+        emergencyInfo: emergencyInfo,
+        extraInfo: extraInfo,
+      );
+
+      // Close loading dialog
+      Navigator.of(context).pop();
+
+      // Show success dialog
+      _showSuccessDialog();
+    } catch (error) {
+      // Close loading dialog
+      Navigator.of(context).pop();
+
+      // Show error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to send registration: $error'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  /// Show success dialog
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Registration Submitted!'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Thank you for your registration. We will review your application and contact you soon with further details.',
+                ),
+                if (studentSignatureUrl != null) ...[
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Student Signature URL:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    studentSignatureUrl!,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+                if (parentSignatureUrl != null) ...[
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Parent Signature URL:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    parentSignatureUrl!,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _clearForm();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+    );
   }
 
   void _clearForm() {
@@ -517,6 +746,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
     // Clear extra information controllers
     _whatInspiresController.clear();
     _favoriteSikhBookController.clear();
+    _completedCoursesController.clear();
 
     // Clear digital signature controllers
     _studentDateOfSignatureController.clear();
@@ -524,7 +754,6 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
 
     setState(() {
       selectedCourseIds.clear();
-      selectedGrade = 'Grade 1';
       selectedDateOfBirth = null;
       selectedGender = null;
       selectedReturningStudent = null;
@@ -533,6 +762,52 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
       selectedHomeworkTime = null;
       studentSignature = null;
       parentSignature = null;
+      studentSignatureUrl = null;
+      parentSignatureUrl = null;
     });
+  }
+
+  // Helper method to get initials from a name
+  String _getInitials(String name) {
+    if (name.isEmpty) return '';
+
+    final nameParts = name.trim().split(' ');
+    if (nameParts.length == 1) {
+      return nameParts[0].substring(0, 1).toUpperCase();
+    } else if (nameParts.length >= 2) {
+      return '${nameParts[0].substring(0, 1)}${nameParts[1].substring(0, 1)}'
+          .toUpperCase();
+    }
+    return name.substring(0, 1).toUpperCase();
+  }
+
+  /// Upload signature to Supabase storage and return the URL
+  Future<String?> _uploadSignatureToSupabase(
+    Uint8List signatureData,
+    String fileName,
+  ) async {
+    try {
+      // Get the signatures bucket
+      final bucket = SupabaseService.client.storage.from('signatures');
+
+      // Upload the signature data
+      await bucket.uploadBinary(fileName, signatureData);
+
+      // Get the public URL
+      final url = bucket.getPublicUrl(fileName);
+
+      print('Signature uploaded successfully: $url');
+      return url;
+    } catch (e) {
+      print('Error uploading signature: $e');
+      return null;
+    }
+  }
+
+  /// Generate unique filename for signature
+  String _generateSignatureFileName(String type, String studentName) {
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final sanitizedName = studentName.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
+    return '${type}_${sanitizedName}_$timestamp.png';
   }
 }

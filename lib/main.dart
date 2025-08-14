@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'utils/app_colors.dart';
 import 'screens/home_screen.dart';
 import 'screens/about_screen.dart';
@@ -14,9 +15,15 @@ import 'screens/registration_screen.dart';
 import 'screens/rules_screen.dart';
 import 'screens/image_notice_screen.dart';
 import 'services/notification_service.dart';
+import 'screens/registration_web_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://vjaemninbyasytikqdjy.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqYWVtbmluYnlhc3l0aWtxZGp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwOTU0ODgsImV4cCI6MjA3MDY3MTQ4OH0.yi9jfRO7UuH2BBUHoGSd8jloCqoF1CY6TMXwieleVQo',
+  );
 
   // Initialize Firebase
   await Firebase.initializeApp();
@@ -104,6 +111,11 @@ final _router = GoRouter(
       path: '/registration',
       name: 'registration',
       builder: (context, state) => const RegistrationScreen(),
+    ),
+    GoRoute(
+      path: '/registration-web',
+      name: 'registration-web',
+      builder: (context, state) => const RegistrationWebScreen(),
     ),
     GoRoute(
       path: '/rules',

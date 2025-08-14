@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../providers/gallery_provider.dart';
 import '../models/gallery_item.dart';
+import '../services/supabase_service.dart';
 
 class GalleryScreen extends ConsumerStatefulWidget {
   const GalleryScreen({super.key});
@@ -11,25 +13,9 @@ class GalleryScreen extends ConsumerStatefulWidget {
 }
 
 class _GalleryScreenState extends ConsumerState<GalleryScreen> {
-  String? selectedCategory;
-  List<String> categories = [];
-
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadCategories();
-    });
-  }
-
-  void _loadCategories() {
-    final galleryAsync = ref.read(galleryProvider);
-    galleryAsync.whenData((galleryItems) {
-      final cats = galleryItems.map((item) => item.category).toSet().toList();
-      setState(() {
-        categories = cats;
-      });
-    });
   }
 
   @override
@@ -37,64 +23,19 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
     final galleryAsync = ref.watch(galleryProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('School Gallery'),
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(Icons.filter_list),
-        //     onPressed: _showFilterDialog,
-        //   ),
-        // ],
-      ),
+      appBar: AppBar(title: const Text('School Gallery')),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.refresh(galleryProvider);
         },
         child: Column(
           children: [
-            /*    // Category Filter
-            if (selectedCategory != null)
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    Text(
-                      'Filtered by: $selectedCategory',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          selectedCategory = null;
-                        });
-                      },
-                      child: const Text('Clear Filter'),
-                    ),
-                  ],
-                ),
-              ),
-*/
             // Gallery Grid
             Expanded(
               child: galleryAsync.when(
                 data: (galleryItems) {
-                  final filteredItems =
-                      selectedCategory != null
-                          ? galleryItems
-                              .where(
-                                (item) => item.category == selectedCategory,
-                              )
-                              .toList()
-                          : galleryItems;
-
-                  if (filteredItems.isEmpty) {
-                    return const Center(
-                      child: Text('No images found for this category.'),
-                    );
+                  if (galleryItems.isEmpty) {
+                    return const Center(child: Text('No images found.'));
                   }
 
                   return GridView.builder(
@@ -106,9 +47,9 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
                           mainAxisSpacing: 16.0,
                           childAspectRatio: 0.75,
                         ),
-                    itemCount: filteredItems.length,
+                    itemCount: galleryItems.length,
                     itemBuilder: (context, index) {
-                      final item = filteredItems[index];
+                      final item = galleryItems[index];
                       return _buildGalleryItem(item);
                     },
                   );
@@ -142,6 +83,9 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
   }
 
   Widget _buildGalleryItem(GalleryItem item) {
+    // Get the public URL from Supabase
+    final imageUrl = SupabaseService.getImageUrl(item.imageUrl);
+
     return Card(
       clipBehavior: Clip.antiAlias,
       elevation: 4,
@@ -151,20 +95,28 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Image.asset(
-                item.imageUrl,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey[300],
-                    child: const Icon(
-                      Icons.image,
-                      size: 50,
-                      color: Colors.grey,
+                placeholder:
+                    (context, url) => Container(
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.image,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
                     ),
-                  );
-                },
+                errorWidget:
+                    (context, url, error) => Container(
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.image,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
+                    ),
               ),
             ),
             /*  Padding(
@@ -245,55 +197,6 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
     }
   }
 
-  void _showFilterDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Filter by Category'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  title: const Text('All Categories'),
-                  leading: Radio<String?>(
-                    value: null,
-                    groupValue: selectedCategory,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCategory = value;
-                      });
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-                ...categories.map(
-                  (category) => ListTile(
-                    title: Text(category),
-                    leading: Radio<String?>(
-                      value: category,
-                      groupValue: selectedCategory,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedCategory = value;
-                        });
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancel'),
-              ),
-            ],
-          ),
-    );
-  }
-
   void _showImageDialog(GalleryItem item) {
     showDialog(
       context: context,
@@ -304,21 +207,30 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
               children: [
                 Stack(
                   children: [
-                    Image.asset(
-                      item.imageUrl,
+                    CachedNetworkImage(
+                      imageUrl: SupabaseService.getImageUrl(item.imageUrl),
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          height: 300,
-                          color: Colors.grey[300],
-                          child: const Icon(
-                            Icons.image,
-                            size: 80,
-                            color: Colors.grey,
+                      placeholder:
+                          (context, url) => Container(
+                            height: 300,
+                            color: Colors.grey[300],
+                            child: const Icon(
+                              Icons.image,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
                           ),
-                        );
-                      },
+                      errorWidget:
+                          (context, url, error) => Container(
+                            height: 300,
+                            color: Colors.grey[300],
+                            child: const Icon(
+                              Icons.image,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
+                          ),
                     ),
                     Positioned(
                       top: 8,

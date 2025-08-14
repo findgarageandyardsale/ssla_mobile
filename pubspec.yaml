@@ -69,8 +69,12 @@ dependencies:
   # URL launcher
   url_launcher: ^6.2.4
   
+  # WebView for displaying web content
+  webview_flutter: ^4.7.0
+  
   # Email functionality
   emailjs: ^1.2.0
+  supabase_flutter: ^2.9.1
 
 dev_dependencies:
   flutter_test:
@@ -100,7 +104,6 @@ flutter:
 
     - assets/
     - assets/courses/
-    - assets/gallery/
     - assets/slider/
     - assets/rule/
 

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../providers/school_provider.dart';
 import '../providers/testimonials_provider.dart';
 import '../providers/gallery_provider.dart';
+import '../services/supabase_service.dart';
 import '../utils/app_colors.dart';
 import '../widgets/carousel_slider.dart';
 
@@ -131,47 +133,56 @@ class HomeScreen extends ConsumerWidget {
                     SizedBox(
                       height: 200,
                       child: galleryAsync.when(
-                        data:
-                            (galleryItems) => ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount:
-                                  galleryItems.length > 8
-                                      ? 8
-                                      : galleryItems.length,
-                              itemBuilder: (context, index) {
-                                final item = galleryItems[index];
-                                return Container(
-                                  width: 200,
-                                  margin: const EdgeInsets.only(right: 12),
-                                  child: Card(
-                                    clipBehavior: Clip.antiAlias,
-                                    elevation: 4,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Image.asset(
-                                      item.imageUrl,
+                        data: (galleryItems) {
+                          // Show only 6-7 images on home screen
+                          final displayItems = galleryItems.take(6).toList();
 
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (
-                                        context,
-                                        error,
-                                        stackTrace,
-                                      ) {
-                                        return Container(
+                          return ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: displayItems.length,
+                            itemBuilder: (context, index) {
+                              final item = displayItems[index];
+                              // Get the full Supabase URL
+                              final imageUrl = SupabaseService.getImageUrl(
+                                item.imageUrl,
+                              );
+
+                              return Container(
+                                width: 200,
+                                margin: const EdgeInsets.only(right: 12),
+                                child: Card(
+                                  clipBehavior: Clip.antiAlias,
+                                  elevation: 4,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: CachedNetworkImage(
+                                    imageUrl: imageUrl,
+                                    fit: BoxFit.cover,
+                                    placeholder:
+                                        (context, url) => Container(
                                           color: Colors.grey[300],
                                           child: const Icon(
                                             Icons.image,
                                             size: 50,
                                             color: Colors.grey,
                                           ),
-                                        );
-                                      },
-                                    ),
+                                        ),
+                                    errorWidget:
+                                        (context, url, error) => Container(
+                                          color: Colors.grey[300],
+                                          child: const Icon(
+                                            Icons.image,
+                                            size: 50,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                              );
+                            },
+                          );
+                        },
                         loading:
                             () => const Center(
                               child: CircularProgressIndicator(),
@@ -434,7 +445,7 @@ class HomeScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.app_registration),
             title: const Text('Registration'),
-            onTap: () => context.push('/registration'),
+            onTap: () => context.push('/registration-web'),
           ),
           ListTile(
             leading: const Icon(Icons.rule),
