@@ -677,9 +677,20 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                     'Student Signature URL:',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  Text(
+                  Image.network(
                     studentSignatureUrl!,
-                    style: const TextStyle(fontSize: 12),
+                    width: 100,
+                    height: 100,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return SizedBox(
+                        width: 100,
+                        height: 100,
+                        child: const CircularProgressIndicator(
+                          color: Colors.orange,
+                        ),
+                      );
+                    },
                   ),
                 ],
                 if (parentSignatureUrl != null) ...[
@@ -688,9 +699,20 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                     'Parent Signature URL:',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  Text(
+                  Image.network(
                     parentSignatureUrl!,
-                    style: const TextStyle(fontSize: 12),
+                    width: 100,
+                    height: 100,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return SizedBox(
+                        width: 100,
+                        height: 100,
+                        child: const CircularProgressIndicator(
+                          color: Colors.orange,
+                        ),
+                      );
+                    },
                   ),
                 ],
               ],
@@ -765,20 +787,6 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
       studentSignatureUrl = null;
       parentSignatureUrl = null;
     });
-  }
-
-  // Helper method to get initials from a name
-  String _getInitials(String name) {
-    if (name.isEmpty) return '';
-
-    final nameParts = name.trim().split(' ');
-    if (nameParts.length == 1) {
-      return nameParts[0].substring(0, 1).toUpperCase();
-    } else if (nameParts.length >= 2) {
-      return '${nameParts[0].substring(0, 1)}${nameParts[1].substring(0, 1)}'
-          .toUpperCase();
-    }
-    return name.substring(0, 1).toUpperCase();
   }
 
   /// Upload signature to Supabase storage and return the URL

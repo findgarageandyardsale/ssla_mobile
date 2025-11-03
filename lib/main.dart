@@ -15,7 +15,6 @@ import 'screens/registration_screen.dart';
 import 'screens/rules_screen.dart';
 import 'screens/image_notice_screen.dart';
 import 'services/notification_service.dart';
-import 'screens/registration_web_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -111,11 +110,6 @@ final _router = GoRouter(
       path: '/registration',
       name: 'registration',
       builder: (context, state) => const RegistrationScreen(),
-    ),
-    GoRoute(
-      path: '/registration-web',
-      name: 'registration-web',
-      builder: (context, state) => const RegistrationWebScreen(),
     ),
     GoRoute(
       path: '/rules',

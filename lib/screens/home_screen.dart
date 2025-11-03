@@ -445,7 +445,7 @@ class HomeScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.app_registration),
             title: const Text('Registration'),
-            onTap: () => context.push('/registration-web'),
+            onTap: () => context.push('/registration'),
           ),
           ListTile(
             leading: const Icon(Icons.rule),

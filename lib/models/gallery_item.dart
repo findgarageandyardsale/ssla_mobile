@@ -23,7 +23,6 @@ class GalleryItem {
     String? category,
   }) {
     final fileName = fileObject.name;
-    final extension = fileName.split('.').last.toLowerCase();
 
     // Generate a title from the filename
     final title = fileName
@@ -48,15 +47,31 @@ class GalleryItem {
     final finalCategory = category ?? _generateCategoryFromFilename(fileName);
 
     return GalleryItem(
-      id: fileObject.id.toString(),
+      id: fileName, // Use filename as unique identifier since FileObject.id is null
       title: title,
       description: description,
       imageUrl:
           fileName, // This will be used to get the public URL from Supabase
       category: finalCategory,
       date:
-          DateTime.now(), // Use current time since updatedAt might not be available
+          _getDateTime(fileObject.updatedAt) ??
+          _getDateTime(fileObject.createdAt) ??
+          DateTime.now(),
     );
+  }
+
+  /// Safely convert Object to DateTime
+  static DateTime? _getDateTime(Object? value) {
+    if (value == null) return null;
+    if (value is DateTime) return value;
+    if (value is String) {
+      try {
+        return DateTime.parse(value);
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
   }
 
   /// Generate category from filename
