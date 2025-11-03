@@ -19,7 +19,7 @@ class HomeScreen extends ConsumerWidget {
     final galleryAsync = ref.watch(galleryProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('SSLA School')),
+      appBar: AppBar(title: const Text('Sikh School Of Los Angeles')),
       drawer: _buildDrawer(context),
       body: RefreshIndicator(
         onRefresh: () async {
